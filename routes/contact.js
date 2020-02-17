@@ -61,4 +61,25 @@ router.get("/:contact", async (req, res) => {
   return res.json(contacts);
 });
 
+//Edit a specific contact
+router.put("/:contact", async (req, res) => {
+  const contact = await Contact.find({ number: req.params.contact });
+
+  //contact not exists
+  if (!contact) {
+    return res.status(404).json({ msg: "Contact not found" });
+  } else {
+    const { name, number } = req.body;
+    let update_contact = {};
+    if (name) update_contact.name = name;
+    if (number) update_contact.number = number;
+
+    const contact = await Contact.update(
+      { number: req.params.contact },
+      { $set: update_contact },
+      { new: true }
+    );
+  }
+});
+
 module.exports = router;
