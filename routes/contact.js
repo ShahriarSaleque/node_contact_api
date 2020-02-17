@@ -82,4 +82,20 @@ router.put("/:contact", async (req, res) => {
   }
 });
 
+router.delete("/:contact", async (req, res) => {
+  const contact = await Contact.find({ number: req.params.contact });
+
+  //contact not exists
+  if (!contact) {
+    return res.status(404).json({ msg: "Contact not found" });
+  } else {
+    try {
+      await Contact.findOneAndDelete({ number: req.params.contact });
+      return res.json({ msg: "Contact deleted" });
+    } catch (error) {
+      return res.status(500).json({ msg: error });
+    }
+  }
+});
+
 module.exports = router;
