@@ -49,9 +49,15 @@ router.post(
   }
 );
 
-//GET request
-router.get("/", async (req, res) => {
+//GET all contact
+router.get("/:", async (req, res) => {
   const contacts = await Contact.find();
+  return res.json(contacts);
+});
+
+//GET specific contact
+router.get("/:contact", async (req, res) => {
+  const contacts = await Contact.find({ number: req.params.contact });
   return res.json(contacts);
 });
 
