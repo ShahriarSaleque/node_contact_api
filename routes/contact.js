@@ -20,8 +20,6 @@ router.post(
       .not()
       .isEmpty(),
     check("number", "Only numbers allowed").isNumeric()
-
-    // check("number").matches("^(?:+?88|0088)?01[15-9]d{8}$")
   ],
 
   async (req, res) => {
@@ -33,17 +31,31 @@ router.post(
       //Create a contact
       const { name, number } = req.body;
 
-      //Instantiate a Contact_Schema object
-      try {
-        const newContact = new Contact({
-          name,
-          number
-        });
-        //Insert to DB
-        const contact = await newContact.save();
-        return res.json(contact);
-      } catch (error) {
-        return res.status(500).send("Internal Server Error");
+      if (number.length != 11) {
+        return res.status(422).json({ msg: "Invalid phone number" });
+      }
+
+      if (
+        number.startsWith("017") ||
+        number.startsWith("019") ||
+        number.startsWith("018") ||
+        number.startsWith("016") ||
+        number.startsWith("015")
+      ) {
+        //Instantiate a Contact_Schema object
+        try {
+          const newContact = new Contact({
+            name,
+            number
+          });
+          //Insert to DB
+          const contact = await newContact.save();
+          return res.json(contact);
+        } catch (error) {
+          return res.status(500).send("Internal Server Error");
+        }
+      } else {
+        return res.status(422).json({ msg: "Invalid phone number" });
       }
     }
   }
