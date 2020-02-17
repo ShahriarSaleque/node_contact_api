@@ -11,10 +11,16 @@ const { check, validationResult } = require("express-validator");
 //POST request
 router.post(
   "/",
+
   [
-    check("name", "Name field is required").isEmpty(),
-    check("number", "Number field is required").isEmpty()
+    check("name", "Name field is required")
+      .not()
+      .isEmpty(),
+    check("number", "Number field is required")
+      .not()
+      .isEmpty()
   ],
+
   (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
