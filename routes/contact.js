@@ -18,23 +18,41 @@ router.post(
       .isEmpty(),
     check("number", "Number field is required")
       .not()
-      .isEmpty()
+      .isEmpty(),
+    check("number", "Only numbers allowed").isNumeric()
+
+    // check("number").matches("^(?:+?88|0088)?01[15-9]d{8}$")
   ],
 
-  (req, res) => {
+  async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       //Errors found -- Display error message
       return res.status(422).json({ errors: errors.array() });
     } else {
-      return res.send("Success");
+      //Create a contact
+      const { name, number } = req.body;
+
+      //Instantiate a Contact_Schema object
+      try {
+        const newContact = new Contact({
+          name,
+          number
+        });
+        //Insert to DB
+        const contact = await newContact.save();
+        return res.json(contact);
+      } catch (error) {
+        return res.status(500).send("Internal Server Error");
+      }
     }
   }
 );
 
 //GET request
-router.get("/", (req, res) => {
-  res.send("GET");
+router.get("/", async (req, res) => {
+  const contacts = await Contact.find();
+  return res.json(contacts);
 });
 
 module.exports = router;
